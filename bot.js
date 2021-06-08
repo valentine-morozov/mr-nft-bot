@@ -1,9 +1,9 @@
 const TelegramBot = require('node-telegram-bot-api');
-const axios = require('axios');;const { log } = require('console');
+const axios = require('axios');
+const process = require('process');
 
-
-const telegramToken = '1733621272:AAEwqYpCYYhZEYQkh4IrGLgM-vuAz9X_sMg';
-const covalentApiKey = 'ckey_dd18b4e15a8e42ccbeee39754d3';
+const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
+const covalentApiKey = process.env.COVALENT_SECRET;
 const host = 'https://api.covalenthq.com';
 
 // Create a bot that uses 'polling' to fetch new updates
@@ -22,6 +22,7 @@ Send me your *BEP20 address* and I will show you your *NFTs*
 
 bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
     const address = match.input;
+    // 56 - Binance Smart Chain
     const chainId = 56;
     
     const getBalancesURL = `${host}/v1/${chainId}/address/${address}/balances_v2/?key=${covalentApiKey}&nft=true`;
@@ -34,7 +35,9 @@ bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
                 const tokens = body.data.items;
                 const tokensNFTs = tokens.filter(token => token.type == 'nft');
                 if (tokensNFTs.length) {
+                    // Send title for our list of images
                     bot.sendMessage(msg.chat.id, '*Your NFTs:*', {parse_mode: 'markdown'});
+
                     for (token of tokensNFTs) {
                         // NFT is created on JGN-NFT
                         if (token.contract_name == 'JGNNFT') {
@@ -43,6 +46,7 @@ bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
                                 if (nft.external_data.description) {
                                     caption += "\n${nft.external_data.description}"
                                 }
+                                // Send photo with caption
                                 bot.sendPhoto(msg.chat.id, nft.external_data.image, {
                                     caption: caption,
                                     parse_mode: 'markdown'
@@ -57,6 +61,6 @@ bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
                 bot.sendMessage(msg.chat.id, "Sorry, I can't get information for your address")
             }
     } catch (err) {
-        console.log('Error: ', err.message);
+        bot.sendMessage(msg.chat.id, "Sorry, I can't get information for your address")
     }
 })
