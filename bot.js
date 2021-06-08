@@ -1,6 +1,10 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const process = require('process');
+const log = require('loglevel');
+
+const logLevel = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'debug';
+log.setLevel(logLevel);
 
 const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
 const covalentApiKey = process.env.COVALENT_SECRET;
@@ -44,7 +48,7 @@ bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
                             for (nft of token.nft_data) {
                                 let caption = `*${nft.external_data.name}*`;
                                 if (nft.external_data.description) {
-                                    caption += "\n${nft.external_data.description}"
+                                    caption += `\n${nft.external_data.description}`
                                 }
                                 // Send photo with caption
                                 bot.sendPhoto(msg.chat.id, nft.external_data.image, {
@@ -52,6 +56,35 @@ bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
                                     parse_mode: 'markdown'
                                 });
                             }
+                        }
+                        if (token.contract_name == 'AirNFTs') {
+                            for (nft of token.nft_data) {
+                                // Here we do not have image url in metadata
+                                // Instead we have a link to json that contains it
+                                const tokenDataResp = await axios.get(nft.token_url);
+
+                                if (!tokenDataResp.error) {
+                                    const tokenData = tokenDataResp.data;
+                                    let caption = `*${tokenData.nft.name}*`;
+                                    if (tokenData.nft.description) {
+                                        caption += `\n${tokenData.nft.description}`
+                                    }
+
+                                    if (!tokenData.nft.image) {
+                                        log.debug(tokenData.nft);
+                                    }
+                                    log.debug('Image url ' + tokenData.nft.image);
+                                
+                                    bot.sendPhoto(msg.chat.id, tokenData.nft.image, {
+                                        caption: caption,
+                                        parse_mode: 'markdown'
+                                    });
+                                } else {
+                                    log.error(tokenDataResp.error);
+                                }
+                                
+                            }
+                            
                         }
                     }
                 } else {
@@ -61,6 +94,7 @@ bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
                 bot.sendMessage(msg.chat.id, "Sorry, I can't get information for your address")
             }
     } catch (err) {
+        log.error(err);
         bot.sendMessage(msg.chat.id, "Sorry, I can't get information for your address")
     }
 })
