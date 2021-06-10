@@ -9,6 +9,4 @@ services:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - COVALENT_SECRET=${COVALENT_SECRET}
       - LOG_LEVEL=${LOG_LEVEL}
-    volumes:
-      - ./:/home/node/app
     restart: always
