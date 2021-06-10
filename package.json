@@ -1,0 +1,33 @@
+{
+  "name": "mr-nft-bot",
+  "version": "0.8.0",
+  "description": "Telegram Bot that shows your NFT tokens",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node bot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valentine-morozov/mr-nft-bot.git"
+  },
+  "keywords": [
+    "nft",
+    "covalent",
+    "telegram",
+    "bot",
+    "crypto"
+  ],
+  "author": "Valentyn Morozov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/valentine-morozov/mr-nft-bot/issues"
+  },
+  "homepage": "https://github.com/valentine-morozov/mr-nft-bot#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "loglevel": "^1.7.1",
+    "node-telegram-bot-api": "^0.53.0",
+    "process": "^0.11.10"
+  }
+}

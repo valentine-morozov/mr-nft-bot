@@ -1,0 +1,15 @@
+version: "2"
+services:
+  node:
+    build:
+        context: .
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - COVALENT_SECRET=${COVALENT_SECRET}
+      - LOG_LEVEL=${LOG_LEVEL}
+    volumes:
+      - ./:/home/node/app
+    restart: always
+    command: "npm start"
