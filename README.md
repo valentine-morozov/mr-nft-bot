@@ -3,9 +3,12 @@
 This is a free [Telegram bot](https://t.me/MrNFTBo) that helps you to see your NFT tokens. 
 It is built on [Covalent API](https://covalenthq.com)
 
-## Run
-Create and fill .env file using .env.dist template
+## Installation
+- [Install Docker](https://docs.docker.com/engine/install/)
+- [Install Docker compose](https://docs.docker.com/compose/install/)
+- Create and fill .env file using .env.dist template
 
+## Run
 
 `docker-compose build`
 
