@@ -18,7 +18,7 @@ const bot = new TelegramBot(telegramToken, { polling: true });
 bot.onText(/^\/start$/, (msg, match) => {
     const text =
         `*Hey${msg.chat.first_name ? ', ' + msg.chat.first_name : ''}* 
-I am *Mister NFT Bot*
+My name is *Mister NFT Bot*
 Send me your *BEP20 address* and I will show you your *NFTs*
 I support NFT tokens created by most of contracts including OpenSea, AirNFTs, JGN-NFT and others
 `;
