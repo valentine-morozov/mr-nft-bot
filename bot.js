@@ -32,38 +32,15 @@ bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
     try {
         const mediaFetcher = new MediaFetcher(host, covalentApiKey);
         const message = await bot.sendMessage(msg.chat.id, '*Fetching your NFTs from blockchain..*', { parse_mode: 'markdown' });
-        
-        let photos = await mediaFetcher.getPhotos(address);
 
-        if (photos.length) {
+        let mediaList = await mediaFetcher.getMediaList(address);
+
+        if (mediaList['photo'].length || mediaList['animation'].length) {
             bot.editMessageText('<b>Your awesome NFTs</b>', {
                 message_id: message.message_id,
                 chat_id: msg.chat.id,
                 parse_mode: 'html'
             });
-            const maxImagesLimit = 10;
-            let start = 0;
-            do {
-                const end = start + maxImagesLimit - 1;
-                const photosPart = photos.slice(start, end);
-                bot.sendMediaGroup(msg.chat.id, photosPart.map(photo => {
-                    let caption = `<b>${photo.name}</b>`;
-                    if (photo.description) {
-                        caption += `\n${photo.description}`
-                    }
-                    caption += `\nContract: ${photo.contractName}`
-                    caption += `\nChain: ${photo.chainId}`
-                    return {
-                        type: 'photo',
-                        media: photo.image,
-                        caption: caption,
-                        parse_mode: 'html'
-                    }
-                }));
-                start += maxImagesLimit;
-            } while (photos[start] !== undefined)
-
-            
         } else {
             bot.editMessageText('**Can not find any supported NFTs**', {
                 message_id: message.message_id,
@@ -71,8 +48,62 @@ bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
                 parse_mode: 'markdown'
             });
         }
+
+        if (mediaList['photo'].length) {
+            const maxItemsLimit = 9;
+            let start = 0;
+            do {
+                try {
+                    const end = start + maxItemsLimit;
+                    const mediaListPart = mediaList['photo'].slice(start, end);
+
+                    log.debug(`Sending ${mediaListPart.length} photos`);
+
+                    await bot.sendMediaGroup(msg.chat.id, mediaListPart.map(media => {
+                        let caption = `<b>${media.name}</b>`;
+                        if (media.description) {
+                            caption += `\n${media.description}`;
+                        }
+                        caption += `\nContract: ${media.contractName}`;
+                        caption += `\nChain: ${media.chainId}`;
+
+                        return {
+                            type: 'photo',
+                            media: media.image,
+                            caption: caption,
+                            parse_mode: 'html'
+                        }
+                    }));
+
+                    start += maxItemsLimit;
+                } catch (e) {
+                    log.error(e);
+                }
+            } while (mediaList['photo'][start] !== undefined)
+        }
+
+        if (mediaList['animation'].length) {
+            for (const media of mediaList['animation']) {
+                try {
+                    // TODO DUPLICATION OF CODE
+                    let caption = `<b>${media.name}</b>`;
+                    if (media.description) {
+                        caption += `\n${media.description}`;
+                    }
+                    caption += `\nContract: ${media.contractName}`;
+                    caption += `\nChain: ${media.chainId}`;
+                    // Strange thing, gif can not be sent as animation, Telegram returns error.
+                    await bot.sendDocument(msg.chat.id, media.image);
+                } catch (e) {
+                    log.error(e);
+                }
+
+            }
+        }
+
     } catch (err) {
         log.error(err);
         bot.sendMessage(msg.chat.id, "Sorry, I can't get information for your address")
     }
+
 })

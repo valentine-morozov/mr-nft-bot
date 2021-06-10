@@ -12,8 +12,11 @@ class MediaFetcher {
         this.covalentApiKey = covalentApiKey;
     }
 
-    async getPhotos(address) {
-        const photos = [];
+    async getMediaList(address) {
+        const mediaList = {
+            'photo': [], 
+            'animation': []
+        };
 
         for (const chainId of SUPPORTED_CHAINS) {
             const getBalancesURL = `${this.host}/v1/${chainId}/address/${address}/balances_v2/?key=${this.covalentApiKey}&nft=true`;
@@ -30,9 +33,16 @@ class MediaFetcher {
                         for (const contract of this.contracts) {
                             if (contract.isSupported(token)) {
                                 console.log(token, contract);
-                                const contractPhotos = await contract.getPhotos(token);
-                                contractPhotos.forEach(photo => photo.chainId = CHAINS_TITLES[chainId]);
-                                photos.push(...contractPhotos);
+                                const contractMediaList = await contract.getMediaList(token);
+                                contractMediaList.forEach(photo => {
+                                    photo.chainId = CHAINS_TITLES[chainId];
+                                    if (this.isPhoto(photo.mimeType)) {
+                                        mediaList['photo'].push(photo);
+                                    } else if (this.isAnimation(photo.mimeType)) {
+                                        mediaList['animation'].push(photo);
+                                    }
+                                });
+
                                 break;
                             }
                         }
@@ -41,7 +51,17 @@ class MediaFetcher {
             }
         }
 
-        return photos;
+        return mediaList;
+    }
+
+    isPhoto(mimeType) {
+        const photoMimeTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/svg'];
+        return photoMimeTypes.indexOf(mimeType) !== -1;
+    }
+
+    isAnimation(mimeType) {
+        const photoMimeTypes = ['image/gif'];
+        return photoMimeTypes.indexOf(mimeType) !== -1;
     }
 }
 
