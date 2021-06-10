@@ -20,10 +20,11 @@ bot.onText(/^\/start$/, (msg, match) => {
         `*Hey${msg.chat.first_name ? ', ' + msg.chat.first_name : ''}* 
 My name is *Mister NFT Bot*
 Send me your *ERC20 or BEP20 address* and I will show you your *NFTs*
-I support NFT tokens created by most of contracts including OpenSea, AirNFTs, JGN-NFT and others
+I support photos and gifs that are stored in NFT tokens created by most of contracts including *OpenSea, AirNFTs, JGN-NFT and others*
+I use [Covalent API](https://www.covalenthq.com/) for fetching data from blockchains
 `;
 
-    bot.sendMessage(msg.chat.id, text, { parse_mode: 'markdown' });
+    bot.sendMessage(msg.chat.id, text, { parse_mode: 'markdown', disable_web_page_preview: true });
 });
 
 bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
