@@ -1,4 +1,4 @@
 run.sh
 .env
 node_modules
-logs/*
+logs/*.log
