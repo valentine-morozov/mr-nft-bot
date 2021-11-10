@@ -5,8 +5,6 @@ services:
         context: .
     user: "node"
     working_dir: /home/node/app
-    volumes: 
-      - ./logs:/home/node/app/logs
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - COVALENT_SECRET=${COVALENT_SECRET}
