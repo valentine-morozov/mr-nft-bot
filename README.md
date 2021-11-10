@@ -1,6 +1,6 @@
 # MrNFTBot
 
-This is a free [Telegram bot](https://t.me/MrNFTBo) that helps you to see your NFT tokens. 
+This is a free [Telegram bot](https://t.me/MrNFTBot) that helps you to see your NFT tokens. 
 It is built on [Covalent API](https://covalenthq.com)
 
 ## Installation
