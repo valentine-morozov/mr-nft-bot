@@ -1,11 +1,22 @@
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const process = require('process');
-const log = require('loglevel');
+const winston = require('winston');
 const { MediaFetcher } = require('./mediaFetcher');
 
-const logLevel = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'debug';
-log.setLevel(logLevel);
+const log = winston.createLogger({
+    level: process.env.LOG_LEVEL ? process.env.LOG_LEVEL : 'debug',
+    format: winston.format.json(),
+    defaultMeta: { service: 'general' },
+    transports: [
+      //
+      // - Write all logs with level `error` and below to `error.log`
+      // - Write all logs with level `debug` and below to `debug.log`
+      //
+      new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+      new winston.transports.File({ filename: 'logs/debug.log', level: 'debug' }),
+    ],
+});
 
 const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
 const covalentApiKey = process.env.COVALENT_SECRET;
@@ -16,7 +27,7 @@ const bot = new TelegramBot(telegramToken, { polling: true });
 
 // Text that is sent on /start command
 bot.onText(/^\/start$/, (msg, match) => {
-    log.info(`Telegram chat #{msg.chat.id} started dialog`);
+    log.info(`Telegram chat #${msg.chat.id} started dialog`);
 
     const text =
         `*Hey${msg.chat.first_name ? ', ' + msg.chat.first_name : ''}* 
@@ -33,7 +44,7 @@ bot.onText(/^0x([\w\d]+)/, async (msg, match) => {
     const address = match.input;
 
     try {
-        const mediaFetcher = new MediaFetcher(host, covalentApiKey);
+        const mediaFetcher = new MediaFetcher(host, covalentApiKey, log);
         const message = await bot.sendMessage(msg.chat.id, '*Fetching your NFTs from blockchain..*', { parse_mode: 'markdown' });
 
         let mediaList = await mediaFetcher.getMediaList(address);

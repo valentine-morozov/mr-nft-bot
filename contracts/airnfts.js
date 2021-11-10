@@ -1,5 +1,4 @@
 const axios = require('axios');
-const log = require('loglevel');
 const { CommonNFT } = require('./common-nft');
 
 class AirNFTs extends CommonNFT {
@@ -27,10 +26,10 @@ class AirNFTs extends CommonNFT {
                         contractName: token.contract_name
                     });
                 } else {
-                    log.error(tokenDataResp.error);
+                    this.log.error(tokenDataResp.error);
                 }
             } catch (e) {
-                log.error(e);
+                this.log.error(e);
             }
         }
 

@@ -1,7 +1,10 @@
-const log = require("loglevel");
 const axios = require('axios');
 
 class CommonNFT {
+    constructor(log) {
+        this.log = log;
+    }
+
     isSupported(token) {
         return token.nft_data && token.nft_data.length && token.nft_data[0].external_data && token.nft_data[0].external_data.image;
     }
@@ -20,7 +23,7 @@ class CommonNFT {
                     });
                 }
             } catch (e) {
-                log.error(e);
+                this.log.error(e);
             }            
         }
 
@@ -37,9 +40,9 @@ class CommonNFT {
         } else if (url.match(/.gif$/)) {
             return 'image/gif';
         }
-        log.debug('Fetch media content-type for ' + url);
+        this.log.debug('Fetch media content-type for ' + url);
         const imageResp = await axios({method: 'head', url: url});
-        log.debug('Content type is ' + imageResp.headers['content-type']);
+        this.log.debug('Content type is ' + imageResp.headers['content-type']);
         return imageResp.headers['content-type'];
     }
 }

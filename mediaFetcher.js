@@ -2,12 +2,11 @@ const { AirNFTs } = require('./contracts/airnfts');
 const { OpenStore } = require('./contracts/openstore');
 const { CommonNFT } = require('./contracts/common-nft');
 const axios = require('axios');
-const log = require('loglevel');
 const { SUPPORTED_CHAINS, CHAINS_TITLES } = require('./chains');
 
 class MediaFetcher {
-    constructor(host, covalentApiKey) {
-        this.contracts = [new AirNFTs, new OpenStore, new CommonNFT];
+    constructor(host, covalentApiKey, log) {
+        this.contracts = [new AirNFTs(log), new OpenStore(log), new CommonNFT(log)];
         this.host = host;
         this.covalentApiKey = covalentApiKey;
     }
