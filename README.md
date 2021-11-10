@@ -13,3 +13,5 @@ It is built on [Covalent API](https://covalenthq.com)
 `docker-compose build`
 
 `docker-compose up -d`
+
+`docker-compose exec -u root node chmod 777 logs`
