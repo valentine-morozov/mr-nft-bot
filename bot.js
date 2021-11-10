@@ -10,12 +10,14 @@ log.setLevel(logLevel);
 const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
 const covalentApiKey = process.env.COVALENT_SECRET;
 const host = 'https://api.covalenthq.com';
-
+``
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(telegramToken, { polling: true });
 
 // Text that is sent on /start command
 bot.onText(/^\/start$/, (msg, match) => {
+    log.info(`Telegram chat #{msg.chat.id} started dialog`);
+
     const text =
         `*Hey${msg.chat.first_name ? ', ' + msg.chat.first_name : ''}* 
 My name is *Mister NFT Bot*
